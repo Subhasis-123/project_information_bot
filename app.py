@@ -91,7 +91,7 @@ with st.spinner("Preparing Knowledge Base..."):
 
     )
 
-    docs = load_documents()
+    docs = load_documents(KNOWLEDGE_PATH)
 
     chunks = chunk_documents(docs)
 

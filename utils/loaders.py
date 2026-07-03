@@ -149,9 +149,15 @@ def load_md(file_path):
 # Main Loader
 # ==========================================================
 
-def load_documents(folder="knowledge"):
+def load_documents(folder):
 
     documents = []
+
+    if not os.path.exists(folder):
+
+        raise FileNotFoundError(
+            f"Knowledge folder '{folder}' not found."
+        )
 
     supported_files = {
         ".pdf": load_pdf,
@@ -165,6 +171,9 @@ def load_documents(folder="knowledge"):
 
         file_path = os.path.join(folder, file)
 
+        if not os.path.isfile(file_path):
+            continue
+
         extension = os.path.splitext(file)[1].lower()
 
         loader = supported_files.get(extension)
@@ -177,6 +186,6 @@ def load_documents(folder="knowledge"):
 
             except Exception as e:
 
-                print(f"Error loading {file}: {e}")
+                print(f"⚠ Error loading {file}: {e}")
 
     return documents
