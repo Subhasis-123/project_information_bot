@@ -4,7 +4,7 @@ import pandas as pd
 from PyPDF2 import PdfReader
 from docx import Document as DocxDocument
 from langchain_core.documents import Document
-
+import inspect
 
 # ==========================================================
 # PDF Loader
@@ -150,6 +150,15 @@ def load_md(file_path):
 # ==========================================================
 
 def load_documents(folder):
+
+
+    print("=" * 60)
+    print("LOADERS.PY LOADED")
+    print("FILE:", __file__)
+    print("SIGNATURE:", inspect.signature(load_documents))
+    print("=" * 60)
+
+
 
     documents = []
 

@@ -5,6 +5,10 @@ import pickle
 from utils.loaders import load_documents
 from utils.chunking import chunk_documents
 from utils.vector_store import create_vector_store
+import inspect
+
+print("Loader file:", inspect.getfile(load_documents))
+print("Loader signature:", inspect.signature(load_documents))
 
 HASH_FILE = "vector_db/knowledge.hash"
 
