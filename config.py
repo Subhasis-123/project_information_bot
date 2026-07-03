@@ -23,6 +23,6 @@ if not GOOGLE_API_KEY and st is not None:
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-KNOWLEDGE_PATH = os.path.join(BASE_DIR, "knowledge")
+KNOWLEDGE_PATH = os.path.join(BASE_DIR, "RDB")
 
 VECTOR_DB_PATH = os.path.join(BASE_DIR, "vector_db")
