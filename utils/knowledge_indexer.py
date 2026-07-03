@@ -54,7 +54,7 @@ def prepare_knowledge_base(folder, embeddings):
 
         return False
 
-    docs = load_documents()
+    docs = load_documents(folder)
 
     chunks = chunk_documents(docs)
 
