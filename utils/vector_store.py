@@ -2,119 +2,203 @@ import os
 
 from langchain_community.vectorstores import FAISS
 
-from config import VECTOR_DB_PATH
+from config import config
 
 
-INDEX_FILE = os.path.join(
-    VECTOR_DB_PATH,
-    "index.faiss"
-)
-
-
-def create_vector_store(chunks, embeddings):
-
+class VectorStoreService:
     """
-    Create FAISS vector database
-    and save it locally.
+    Enterprise Vector Store Service
+
+    Responsibilities:
+    -----------------
+    1. Create FAISS database
+    2. Load existing FAISS database
+    3. Check whether vector DB exists
+    4. Perform similarity search
+    5. Perform similarity search with scores
     """
 
-    if not os.path.exists(VECTOR_DB_PATH):
+    def __init__(self):
 
-        os.makedirs(VECTOR_DB_PATH)
+        self.vector_db_path = config.VECTOR_DB_PATH
 
-    db = FAISS.from_documents(
+        self.index_file = os.path.join(
+
+            self.vector_db_path,
+
+            "index.faiss"
+
+        )
+
+    # =====================================================
+    # Create Vector Store
+    # =====================================================
+
+    def create_vector_store(
+
+        self,
+
         chunks,
+
         embeddings
-    )
 
-    db.save_local(VECTOR_DB_PATH)
+    ):
 
-    return db
+        if not os.path.exists(
 
+            self.vector_db_path
 
-def load_vector_store(embeddings):
+        ):
 
-    """
-    Load existing FAISS database.
-    """
+            os.makedirs(
 
-    db = FAISS.load_local(
+                self.vector_db_path
 
-        VECTOR_DB_PATH,
+            )
 
-        embeddings,
+        db = FAISS.from_documents(
 
-        allow_dangerous_deserialization=True
+            chunks,
 
-    )
+            embeddings
 
-    return db
+        )
 
+        db.save_local(
 
-def vector_store_exists():
+            self.vector_db_path
 
-    """
-    Check whether the FAISS index exists.
-    """
+        )
 
-    return os.path.exists(INDEX_FILE)
+        return db
 
+    # =====================================================
+    # Load Vector Store
+    # =====================================================
 
-def get_vector_store(chunks, embeddings):
+    def load_vector_store(
 
-    """
-    Enterprise method.
+        self,
 
-    If vector DB exists → Load
+        embeddings
 
-    Else → Create & Save
-    """
+    ):
 
-    if vector_store_exists():
+        return FAISS.load_local(
 
-        print("Loading existing FAISS database...")
+            self.vector_db_path,
 
-        return load_vector_store(embeddings)
+            embeddings,
 
-    print("Creating new FAISS database...")
+            allow_dangerous_deserialization=True
 
-    return create_vector_store(
+        )
+
+    # =====================================================
+    # Check Vector DB
+    # =====================================================
+
+    def vector_store_exists(self):
+
+        return os.path.exists(
+
+            self.index_file
+
+        )
+
+    # =====================================================
+    # Get Vector Store
+    # =====================================================
+
+    def get_vector_store(
+
+        self,
+
         chunks,
+
         embeddings
-    )
 
+    ):
 
-def similarity_search(
-    db,
-    query,
-    k=5
-):
+        if self.vector_store_exists():
 
-    """
-    Retrieve Top-K similar chunks.
-    """
+            print(
 
-    results = db.similarity_search(
+                "Loading existing FAISS database..."
+
+            )
+
+            return self.load_vector_store(
+
+                embeddings
+
+            )
+
+        print(
+
+            "Creating new FAISS database..."
+
+        )
+
+        return self.create_vector_store(
+
+            chunks,
+
+            embeddings
+
+        )
+
+    # =====================================================
+    # Similarity Search
+    # =====================================================
+
+    def similarity_search(
+
+        self,
+
+        db,
+
         query,
-        k=k
-    )
 
-    return results
+        k=5
 
+    ):
 
-def similarity_search_with_score(
-    db,
-    query,
-    k=5
-):
+        return db.similarity_search(
 
-    """
-    Retrieve Top-K chunks with similarity score.
-    """
+            query,
 
-    results = db.similarity_search_with_score(
+            k=k
+
+        )
+
+    # =====================================================
+    # Similarity Search with Score
+    # =====================================================
+
+    def similarity_search_with_score(
+
+        self,
+
+        db,
+
         query,
-        k=k
-    )
 
-    return results
+        k=5
+
+    ):
+
+        return db.similarity_search_with_score(
+
+            query,
+
+            k=k
+
+        )
+
+
+# =====================================================
+# Singleton Instance
+# =====================================================
+
+vector_store_service = VectorStoreService()

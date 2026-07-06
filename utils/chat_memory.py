@@ -1,43 +1,94 @@
 import streamlit as st
 
 
-def initialize_chat():
+class ChatMemoryService:
+    """
+    Enterprise Chat Memory Service
 
-    if "messages" not in st.session_state:
+    Responsibilities
+    ----------------
+    1. Initialize chat history
+    2. Store user messages
+    3. Store AI messages
+    4. Retrieve chat history
+    5. Clear chat history
+    """
 
-        st.session_state.messages = []
+    def __init__(self):
+
+        self.memory_key = "chat_history"
+
+    # ==========================================
+    # Initialize Chat
+    # ==========================================
+
+    def initialize_chat(self):
+
+        if self.memory_key not in st.session_state:
+
+            st.session_state[self.memory_key] = []
+
+    # ==========================================
+    # Add User Message
+    # ==========================================
+
+    def add_user_message(self, message):
+
+        st.session_state[self.memory_key].append(
+
+            {
+
+                "role": "user",
+
+                "content": message
+
+            }
+
+        )
+
+    # ==========================================
+    # Add AI Message
+    # ==========================================
+
+    def add_ai_message(self, message):
+
+        st.session_state[self.memory_key].append(
+
+            {
+
+                "role": "assistant",
+
+                "content": message
+
+            }
+
+        )
+
+    # ==========================================
+    # Get Chat History
+    # ==========================================
+
+    def get_chat_history(self):
+
+        return st.session_state.get(
+
+            self.memory_key,
+
+            []
+
+        )
+
+    # ==========================================
+    # Clear Chat
+    # ==========================================
+
+    def clear_chat(self):
+
+        st.session_state[self.memory_key] = []
 
 
-def add_user_message(message):
+# ==================================================
+# Singleton Instance
+# ==================================================
 
-    st.session_state.messages.append(
-
-        {
-
-            "role": "user",
-
-            "content": message
-
-        }
-
-    )
-
-
-def add_ai_message(message):
-
-    st.session_state.messages.append(
-
-        {
-
-            "role": "assistant",
-
-            "content": message
-
-        }
-
-    )
-
-
-def get_chat_history():
-
-    return st.session_state.messages
+chat_memory = ChatMemoryService()

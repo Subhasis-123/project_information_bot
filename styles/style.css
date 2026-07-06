@@ -1,0 +1,94 @@
+/* ===============================
+   Main Background
+================================*/
+
+.stApp{
+    background:#0f172a;
+}
+
+/* ===============================
+   Header
+================================*/
+
+.main-title{
+    font-size:40px;
+    font-weight:bold;
+    color:white;
+}
+
+.sub-title{
+    color:#94a3b8;
+    font-size:18px;
+}
+
+/* ===============================
+   Cards
+================================*/
+
+.card{
+
+    background:#1e293b;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:0 0 12px rgba(0,0,0,.25);
+
+    margin-bottom:15px;
+
+}
+
+/* ===============================
+   Metric
+================================*/
+
+.metric-title{
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+.metric-value{
+
+    color:white;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}
+
+/* ===============================
+   Sidebar
+================================*/
+
+section[data-testid="stSidebar"]{
+
+    background:#111827;
+
+}
+
+/* ===============================
+   Chat
+================================*/
+
+.stChatMessage{
+
+    border-radius:15px;
+
+}
+
+/* ===============================
+   Button
+================================*/
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+}

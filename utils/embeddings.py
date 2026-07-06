@@ -1,16 +1,33 @@
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-from config import GOOGLE_API_KEY
+from config import config
 
 
-def get_embeddings():
+class EmbeddingService:
+    """
+    Enterprise Embedding Service
 
-    embeddings = GoogleGenerativeAIEmbeddings(
+    Responsibilities:
+    -----------------
+    1. Initialize embedding model
+    2. Return embedding instance
+    3. Keep embedding configuration centralized
+    """
 
-        model="models/gemini-embedding-001",
+    def __init__(self):
 
-        google_api_key=GOOGLE_API_KEY
+        self.embeddings = GoogleGenerativeAIEmbeddings(
 
-    )
+            model=config.EMBEDDING_MODEL,
 
-    return embeddings
+            google_api_key=config.GOOGLE_API_KEY
+
+        )
+
+    def get_embeddings(self):
+
+        return self.embeddings
+
+
+# Singleton Instance
+embedding_service = EmbeddingService()

@@ -2,71 +2,146 @@ import hashlib
 import os
 import pickle
 
-from utils.loaders import load_documents
-from utils.chunking import chunk_documents
-from utils.vector_store import create_vector_store
-import inspect
-
-print("Loader file:", inspect.getfile(load_documents))
-print("Loader signature:", inspect.signature(load_documents))
-
-HASH_FILE = "vector_db/knowledge.hash"
+from utils.loaders import document_loader
+from utils.chunking import text_chunker
+from utils.vector_store import vector_store_service
 
 
-def calculate_hash(folder):
+class KnowledgeIndexer:
+    """
+    Enterprise Knowledge Indexer
 
-    md5 = hashlib.md5()
+    Responsibilities:
+    -----------------
+    1. Detect knowledge base changes
+    2. Load documents
+    3. Chunk documents
+    4. Build Vector Database
+    5. Store latest hash
+    """
 
-    for root, _, files in os.walk(folder):
+    def __init__(self):
 
-        for file in sorted(files):
+        self.hash_file = os.path.join(
+            "vector_db",
+            "knowledge.hash"
+        )
 
-            path = os.path.join(root, file)
+    # =====================================================
+    # Calculate Folder Hash
+    # =====================================================
 
-            with open(path, "rb") as f:
+    def calculate_hash(self, folder):
 
-                md5.update(f.read())
+        md5 = hashlib.md5()
 
-    return md5.hexdigest()
+        for root, _, files in os.walk(folder):
 
+            for file in sorted(files):
 
-def save_hash(hash_value):
+                path = os.path.join(root, file)
 
-    with open(HASH_FILE, "wb") as f:
+                with open(path, "rb") as f:
 
-        pickle.dump(hash_value, f)
+                    md5.update(f.read())
 
+        return md5.hexdigest()
 
-def load_hash():
+    # =====================================================
+    # Save Hash
+    # =====================================================
 
-    if not os.path.exists(HASH_FILE):
+    def save_hash(self, hash_value):
 
-        return None
+        with open(self.hash_file, "wb") as f:
 
-    with open(HASH_FILE, "rb") as f:
+            pickle.dump(hash_value, f)
 
-        return pickle.load(f)
+    # =====================================================
+    # Load Hash
+    # =====================================================
 
+    def load_hash(self):
 
-def prepare_knowledge_base(folder, embeddings):
+        if not os.path.exists(self.hash_file):
 
-    current_hash = calculate_hash(folder)
+            return None
 
-    previous_hash = load_hash()
+        with open(self.hash_file, "rb") as f:
 
-    if current_hash == previous_hash:
+            return pickle.load(f)
 
-        return False
+    # =====================================================
+    # Prepare Knowledge Base
+    # =====================================================
 
-    docs = load_documents(folder)
+    def prepare_knowledge_base(
 
-    chunks = chunk_documents(docs)
+        self,
 
-    create_vector_store(
-        chunks,
+        folder,
+
         embeddings
-    )
 
-    save_hash(current_hash)
+    ):
 
-    return True
+        current_hash = self.calculate_hash(
+
+            folder
+
+        )
+
+        previous_hash = self.load_hash()
+
+        # No changes
+
+        if current_hash == previous_hash:
+
+            print(
+                "Knowledge Base already up-to-date."
+            )
+
+            return False
+
+        print(
+            "Knowledge Base changed. Rebuilding..."
+        )
+
+        docs = document_loader.load_documents(
+
+            folder
+
+        )
+
+        chunks = text_chunker.chunk_documents(
+
+            docs
+
+        )
+
+        vector_store_service.create_vector_store(
+
+            chunks,
+
+            embeddings
+
+        )
+
+        self.save_hash(
+
+            current_hash
+
+        )
+
+        print(
+            "Knowledge Base successfully indexed."
+        )
+
+        return True
+
+
+# =====================================================
+# Singleton Instance
+# =====================================================
+
+knowledge_indexer = KnowledgeIndexer()

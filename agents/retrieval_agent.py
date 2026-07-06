@@ -1,32 +1,56 @@
-from utils.vector_store import similarity_search_with_score
+from config import config
+from utils.vector_store import vector_store_service
 
 
-def retrieve_documents(
-    db,
-    query,
-    k=5
-):
-    """
-    Retrieve the Top-K most similar chunks
-    from the FAISS vector database.
-    """
+class RetrievalAgent:
 
-    results = similarity_search_with_score(
+    def __init__(self):
+
+        self.top_k = config.TOP_K
+
+        # Smaller score = better match (FAISS L2 distance)
+        self.similarity_threshold = 100
+
+    def retrieve_documents(
+
+        self,
+
         db,
-        query,
-        k
-    )
 
-    documents = []
+        query
 
-    context = ""
+    ):
 
-    for doc, score in results:
+        results = vector_store_service.similarity_search_with_score(
 
-        doc.metadata["score"] = float(score)
+            db,
 
-        documents.append(doc)
+            query,
 
-        context += doc.page_content + "\n\n"
+            k=self.top_k
 
-    return context, documents
+        )
+
+        context = ""
+
+        documents = []
+
+        for doc, score in results:
+
+            print(f"Score : {score}")
+
+            # Reject unrelated chunks
+            if score > self.similarity_threshold:
+
+                continue
+
+            doc.metadata["score"] = float(score)
+
+            context += doc.page_content + "\n\n"
+
+            documents.append(doc)
+
+        return context, documents
+
+
+retrieval_agent = RetrievalAgent()
