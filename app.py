@@ -11,6 +11,8 @@ from utils.chunking import chunk_documents
 from utils.embeddings import get_embeddings
 from utils.vector_store import get_vector_store
 from utils.knowledge_indexer import prepare_knowledge_base
+from utils.validator import PromptValidator
+
 from utils.chat_memory import (
     initialize_chat,
     add_user_message,
@@ -127,6 +129,16 @@ query = st.chat_input(
 
 if query:
 
+
+    valid, result = PromptValidator.validate(query)
+
+    if not valid:
+
+        st.warning(result)
+
+        st.stop()
+
+    query = result
     # Show User Message
 
     add_user_message(query)
