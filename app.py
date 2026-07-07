@@ -168,7 +168,7 @@ if query:
 
     if not valid:
 
-        st.warning(result)
+        st.error(result)
 
         st.stop()
 
